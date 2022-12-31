@@ -1,5 +1,5 @@
 const express = require('express');
-//const dotenv = require('dotenv');
+const dotenv = require('dotenv');
 const app = new express();
 
 /*This tells the server to use the client 
@@ -13,7 +13,7 @@ app.use(cors_app());
 /*Uncomment the following lines to loan the environment 
 variables that you set up in the .env file*/
 
-const dotenv = require('dotenv');
+//const dotenv = require('dotenv');
 dotenv.config();
 
 const api_key = process.env.API_KEY;
@@ -39,7 +39,7 @@ function getNLUInstance() {
 
 
 //The default endpoint for the webserver
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
     res.render('index.html');
 });
 
@@ -71,8 +71,9 @@ app.get("/url/emotion", (req, res) => {
 });
 
 //The endpoint for the webserver ending with /url/sentiment
-app.get("/url/sentiment", (req, res) => {
-    let urlToAnalyzeParams =
+app.get("/url/sentiment", (req,res) => {
+    let urlToAnalyze = req.query.url
+    const analyzeParams =
     {
         "url": urlToAnalyze,
         "features": {
@@ -112,7 +113,7 @@ const analyzeParams =
 const naturalLanguageUnderstanding = getNLUInstance();
 
 naturalLanguageUnderstanding.analyze(analyzeParams)
-.then(analysisResult => {
+.then(analysisResults => {
 
     return res.send(analysisResults.result.keywords[0].emotion,null,2);
 })
